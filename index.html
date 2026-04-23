@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desi Quiz Master</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a1f0e;
+  --bg2: #0f2912;
+  --card: #122b14;
+  --card2: #163318;
+  --border: #1e4a22;
+  --gold: #f5c518;
+  --gold2: #e6a800;
+  --green: #2ecc71;
+  --green2: #27ae60;
+  --red: #e74c3c;
+  --text: #e8f5e9;
+  --text2: #a5c8a8;
+  --locked: #0d2010;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.light {
+  --bg: #e8f5e9;
+  --bg2: #d4edda;
+  --card: #ffffff;
+  --card2: #f0faf1;
+  --border: #a5d6a7;
+  --text: #1b3a1e;
+  --text2: #4a7a4d;
+  --locked: #e0e0e0;
+  --shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  background-image: radial-gradient(ellipse at 20% 20%, rgba(46,204,113,0.07) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 80%, rgba(245,197,24,0.05) 0%, transparent 60%);
+}
+/* TOPBAR */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top:0; z-index:100;
+  backdrop-filter: blur(10px);
+}
+.logo {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.3rem; font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+.topbar-right { display:flex; gap:10px; align-items:center; }
+.btn-sm {
+  padding: 7px 16px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--card2); color: var(--text); font-family:'Nunito',sans-serif;
+  font-size:0.85rem; font-weight:700; cursor:pointer; transition:all 0.2s;
+}
+.btn-sm:hover { border-color: var(--gold); color: var(--gold); }
+.coin-badge {
+  display:flex; align-items:center; gap:6px;
+  background: linear-gradient(135deg, #2a1f00, #3d2e00);
+  border: 1px solid var(--gold2);
+  padding: 7px 14px; border-radius: 20px;
+  font-weight:800; color: var(--gold);
+  font-size:0.9rem; position:relative; overflow:hidden;
+}
+.coin-badge.shake { animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+.coin-float {
+  position:fixed; pointer-events:none; z-index:999;
+  font-weight:800; font-size:1rem; animation: floatUp 1.2s ease forwards;
+}
+@keyframes floatUp { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-60px)} }
+
+/* SCREENS */
+.screen { display:none; max-width:860px; margin:0 auto; padding:24px 16px; }
+.screen.active { display:block; }
+
+/* MAIN MENU */
+.hero { text-align:center; padding: 32px 16px 24px; }
+.hero h1 {
+  font-family:'Baloo 2',cursive; font-size:2.8rem; font-weight:800;
+  background: linear-gradient(135deg, var(--gold), var(--green));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text; margin-bottom:8px;
+}
+.hero p { color:var(--text2); font-size:1rem; }
+.menu-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:28px 0; }
+.menu-card {
+  background: var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:20px; cursor:pointer;
+  transition:all 0.25s; text-align:center;
+}
+.menu-card:hover { border-color:var(--gold); transform:translateY(-3px); box-shadow: var(--shadow); }
+.menu-card .icon { font-size:2.2rem; margin-bottom:8px; }
+.menu-card h3 { font-size:1rem; font-weight:800; margin-bottom:4px; }
+.menu-card p { font-size:0.8rem; color:var(--text2); }
+.menu-card.highlight { border-color:var(--gold); background:linear-gradient(135deg, var(--card), #2a1f00); }
+.streak-banner {
+  background:linear-gradient(135deg,#1a3a1e,#2a1f00);
+  border:1px solid var(--gold); border-radius:14px;
+  padding:14px 20px; display:flex; align-items:center; gap:12px; margin-bottom:20px;
+}
+
+/* SECTION CARD */
+.section-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:20px; padding:24px; margin-bottom:20px;
+}
+.section-title {
+  font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800;
+  margin-bottom:6px; color:var(--gold);
+}
+.section-sub { font-size:0.82rem; color:var(--text2); margin-bottom:18px; }
+
+/* CATEGORIES */
+.cat-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:560px){ .cat-grid{grid-template-columns:1fr;} .menu-grid{grid-template-columns:1fr;} }
+.cat-card {
+  background:var(--card2); border:2px solid var(--border);
+  border-radius:14px; padding:14px 16px; cursor:pointer;
+  transition:all 0.25s; position:relative; overflow:hidden;
+}
+.cat-card:hover:not(.locked) { border-color:var(--gold); transform:scale(1.02); }
+.cat-card.selected { border-color:var(--gold); background:linear-gradient(135deg,var(--card2),#2a1f00); }
+.cat-card.locked { cursor:pointer; opacity:0.75; }
+.cat-card.locked:hover { opacity:0.9; }
+.cat-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; }
+.cat-name { font-size:0.95rem; font-weight:800; }
+.cat-desc { font-size:0.75rem; color:var(--text2); line-height:1.4; }
+.badge-ready {
+  background:#1a4a1e; border:1px solid var(--green2);
+  color:var(--green); font-size:0.7rem; font-weight:800;
+  padding:3px 8px; border-radius:8px; white-space:nowrap;
+  animation: pulse-green 2s infinite;
+}
+@keyframes pulse-green { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.badge-locked {
+  background:#2a1f00; border:1px solid var(--gold2);
+  color:var(--gold); font-size:0.7rem; font-weight:800;
+  padding:3px 8px; border-radius:8px; white-space:nowrap;
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.badge-unlocked {
+  background:#1a4a1e; border:1px solid var(--green2);
+  color:var(--green); font-size:0.7rem; font-weight:800;
+  padding:3px 8px; border-radius:8px;
+}
+.lock-overlay {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.0); border-radius:12px;
+}
+
+/* DIFFICULTY */
+.diff-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+@media(max-width:480px){ .diff-grid{grid-template-columns:1fr;} }
+.diff-card {
+  background:var(--card2); border:2px solid var(--border);
+  border-radius:14px; padding:14px; cursor:pointer; transition:all 0.25s; text-align:center;
+}
+.diff-card:hover { border-color:var(--gold); }
+.diff-card.selected { border-color:var(--gold); background:linear-gradient(135deg,var(--card2),#2a1f00); }
+.diff-icon { font-size:1.8rem; margin-bottom:6px; }
+.diff-name { font-weight:800; font-size:0.95rem; }
+.diff-info { font-size:0.72rem; color:var(--text2); margin-top:3px; }
+
+/* ACTION BUTTONS */
+.action-row { display:flex; gap:12px; margin-top:24px; flex-wrap:wrap; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #1a0f00; font-family:'Nunito',sans-serif; font-size:1rem;
+  font-weight:800; padding:14px 32px; border-radius:14px; border:none;
+  cursor:pointer; transition:all 0.2s; box-shadow:0 4px 20px rgba(245,197,24,0.3);
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(245,197,24,0.5); }
+.btn-secondary {
+  background:transparent; border:2px solid var(--green2);
+  color:var(--green); font-family:'Nunito',sans-serif; font-size:1rem;
+  font-weight:800; padding:14px 28px; border-radius:14px;
+  cursor:pointer; transition:all 0.2s;
+}
+.btn-secondary:hover { background:var(--green2); color:#fff; }
+.btn-outline {
+  background:transparent; border:1px solid var(--border);
+  color:var(--text2); font-family:'Nunito',sans-serif; font-size:0.9rem;
+  font-weight:700; padding:10px 20px; border-radius:10px;
+  cursor:pointer; transition:all 0.2s;
+}
+.btn-outline:hover { border-color:var(--text2); color:var(--text); }
+
+/* QUIZ SCREEN */
+.quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:12px; flex-wrap:wrap; }
+.quiz-progress-wrap { flex:1; min-width:160px; }
+.quiz-progress-label { font-size:0.78rem; color:var(--text2); margin-bottom:6px; display:flex; justify-content:space-between; }
+.progress-bar-bg { background:var(--border); border-radius:10px; height:8px; overflow:hidden; }
+.progress-bar-fill { height:100%; border-radius:10px; background:linear-gradient(90deg,var(--green),var(--gold)); transition:width 0.4s ease; }
+.timer-wrap { text-align:center; }
+.timer-circle {
+  width:56px; height:56px; border-radius:50%;
+  border:3px solid var(--gold); display:flex; align-items:center; justify-content:center;
+  font-family:'Baloo 2',cursive; font-size:1.3rem; font-weight:800; color:var(--gold);
+  transition:all 0.3s; position:relative;
+}
+.timer-circle.danger { border-color:var(--red); color:var(--red); animation:timerPulse 0.5s infinite; }
+@keyframes timerPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+.powerups-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+.powerup-btn {
+  background:var(--card2); border:1px solid var(--border);
+  color:var(--text); font-family:'Nunito',sans-serif; font-size:0.78rem;
+  font-weight:700; padding:7px 12px; border-radius:10px;
+  cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:5px;
+}
+.powerup-btn:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
+.powerup-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.question-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:20px; padding:28px; margin-bottom:18px;
+  position:relative; overflow:hidden;
+}
+.question-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--green),var(--gold));
+}
+.q-category { font-size:0.75rem; color:var(--gold); font-weight:700; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; }
+.q-text { font-size:1.1rem; font-weight:700; line-height:1.5; }
+.options-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:500px){ .options-grid{grid-template-columns:1fr;} }
+.option-btn {
+  background:var(--card2); border:2px solid var(--border);
+  color:var(--text); font-family:'Nunito',sans-serif; font-size:0.92rem;
+  font-weight:600; padding:14px 16px; border-radius:14px;
+  cursor:pointer; transition:all 0.2s; text-align:left; line-height:1.3;
+}
+.option-btn:hover:not(:disabled) { border-color:var(--gold); background:var(--card); transform:translateX(3px); }
+.option-btn.correct { background:#1a4a1e; border-color:var(--green); color:var(--green); }
+.option-btn.wrong { background:#3a1a1a; border-color:var(--red); color:var(--red); }
+.option-btn.eliminated { opacity:0.3; text-decoration:line-through; pointer-events:none; }
+.option-btn:disabled:not(.correct):not(.wrong):not(.eliminated) { cursor:default; }
+
+/* AI LOADING */
+.ai-loading {
+  text-align:center; padding:48px 24px;
+}
+.ai-spinner {
+  width:60px; height:60px; border:4px solid var(--border);
+  border-top-color:var(--gold); border-radius:50%;
+  animation:spin 0.8s linear infinite; margin:0 auto 20px;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.ai-loading h3 { font-family:'Baloo 2',cursive; font-size:1.4rem; color:var(--gold); margin-bottom:8px; }
+.ai-loading p { color:var(--text2); font-size:0.9rem; }
+.ai-dots span { display:inline-block; animation:dotBounce 1.2s infinite; }
+.ai-dots span:nth-child(2){animation-delay:0.2s}
+.ai-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes dotBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* RESULT SCREEN */
+.result-hero { text-align:center; padding:24px; }
+.result-grade {
+  font-family:'Baloo 2',cursive; font-size:5rem; font-weight:800;
+  background:linear-gradient(135deg,var(--gold),var(--green));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.result-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0; }
+.stat-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:14px; padding:16px; text-align:center;
+}
+.stat-val { font-family:'Baloo 2',cursive; font-size:1.8rem; font-weight:800; color:var(--gold); }
+.stat-label { font-size:0.75rem; color:var(--text2); margin-top:4px; }
+
+/* LEADERBOARD */
+.lb-row {
+  display:flex; align-items:center; gap:12px;
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:12px; padding:12px 16px; margin-bottom:8px;
+}
+.lb-rank { font-family:'Baloo 2',cursive; font-size:1.4rem; font-weight:800; color:var(--gold); width:32px; }
+.lb-info { flex:1; }
+.lb-name { font-weight:800; font-size:0.95rem; }
+.lb-score { font-size:0.78rem; color:var(--text2); }
+.lb-pts { font-family:'Baloo 2',cursive; font-size:1.2rem; font-weight:800; color:var(--green); }
+
+/* POPUP */
+.popup-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75);
+  z-index:500; align-items:center; justify-content:center; padding:16px;
+}
+.popup-overlay.show { display:flex; }
+.popup {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:24px; padding:32px 28px; max-width:400px; width:100%;
+  text-align:center; animation:popIn 0.3s ease;
+}
+@keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
+.popup h2 { font-family:'Baloo 2',cursive; font-size:1.5rem; color:var(--gold); margin-bottom:10px; }
+.popup p { color:var(--text2); font-size:0.9rem; margin-bottom:20px; line-height:1.5; }
+.popup-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.ad-timer-bar {
+  background:var(--border); border-radius:10px; height:8px; overflow:hidden; margin:16px 0;
+}
+.ad-timer-fill {
+  height:100%; background:linear-gradient(90deg,var(--gold),var(--green));
+  border-radius:10px; transition:width 0.1s linear;
+}
+.ad-banner {
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border:2px dashed #444; border-radius:12px; padding:20px;
+  margin:16px 0; font-size:1.2rem; font-weight:800; color:#aaa;
+  letter-spacing:2px;
+}
+
+/* SETTINGS */
+.settings-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:14px 0; border-bottom:1px solid var(--border);
+}
+.settings-row:last-child { border:none; }
+.settings-label { font-weight:700; }
+.settings-desc { font-size:0.78rem; color:var(--text2); margin-top:2px; }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  background:var(--card); border:1px solid var(--border);
+  padding:12px 24px; border-radius:14px; font-weight:700;
+  z-index:999; opacity:0; transition:opacity 0.3s;
+  pointer-events:none; white-space:nowrap;
+}
+.toast.show { opacity:1; }
+
+/* CONFETTI */
+.confetti-piece {
+  position:fixed; width:10px; height:10px; border-radius:2px;
+  animation:confettiFall 3s ease forwards; pointer-events:none; z-index:998;
+}
+@keyframes confettiFall {
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+
+/* NAME POPUP */
+.name-input-box {
+  background:var(--card2); border:2px solid var(--gold);
+  color:var(--text); font-family:'Baloo 2',cursive; font-size:1.1rem;
+  font-weight:700; padding:12px 18px; border-radius:14px;
+  width:100%; margin-bottom:16px; text-align:center;
+  outline:none;
+}
+.name-input-box::placeholder { color:var(--text2); font-weight:400; }
+
+/* SHARE BTN */
+.btn-share {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color:#fff; font-family:'Nunito',sans-serif; font-size:1rem;
+  font-weight:800; padding:14px 28px; border-radius:14px; border:none;
+  cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px;
+}
+.btn-share:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(37,211,102,0.4); }
+
+/* SOUND TOGGLE */
+.sound-toggle {
+  background:var(--card2); border:1px solid var(--border);
+  color:var(--text); padding:7px 14px; border-radius:20px;
+  font-family:'Nunito',sans-serif; font-size:0.85rem; font-weight:700;
+  cursor:pointer; transition:all 0.2s;
+}
+.sound-toggle:hover { border-color:var(--gold); color:var(--gold); }
+
+/* BACK BTN */
+.back-btn {
+  background:var(--card2); border:1px solid var(--border);
+  color:var(--text2); font-family:'Nunito',sans-serif; font-size:0.85rem;
+  font-weight:700; padding:8px 16px; border-radius:10px;
+  cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;
+  margin-bottom:20px;
+}
+.back-btn:hover { color:var(--text); border-color:var(--text2); }
+.divider { height:1px; background:var(--border); margin:20px 0; }
+.ai-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:linear-gradient(135deg,#1a1a2e,#2d1f4e);
+  border:1px solid #6c3fc4; color:#b794f4;
+  font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:8px;
+  margin-bottom:12px;
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">🎯 Desi Quiz Master</div>
+  <div class="topbar-right">
+    <button class="btn-sm" onclick="toggleTheme()">☀️ Light</button>
+    <button class="sound-toggle" id="sound-btn" onclick="toggleSound()">🔊</button>
+    <button class="btn-sm" onclick="showScreen('settings-screen')">⚙️</button>
+    <div class="coin-badge" id="coin-display">🪙 <span id="coin-count">0</span></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════ MAIN MENU ══════════════ -->
+<div class="screen active" id="main-screen">
+  <div class="hero">
+    <h1>Desi Quiz Master</h1>
+    <p>AI-powered questions. New every time. 🤖✨</p>
+  </div>
+
+  <div id="streak-area"></div>
+  <div id="daily-bonus-area"></div>
+
+  <div class="menu-grid">
+    <div class="menu-card highlight" onclick="showScreen('play-screen')">
+      <div class="icon">🎮</div>
+      <h3>Play Now</h3>
+      <p>AI generates fresh questions</p>
+    </div>
+    <div class="menu-card" onclick="showScreen('daily-screen')">
+      <div class="icon">🔥</div>
+      <h3>Daily Challenge</h3>
+      <p>Same for everyone today</p>
+    </div>
+    <div class="menu-card" onclick="showScreen('tournament-screen')">
+      <div class="icon">🏆</div>
+      <h3>Tournament</h3>
+      <p>30 coins entry — big glory</p>
+    </div>
+    <div class="menu-card" onclick="showScreen('leaderboard-screen')">
+      <div class="icon">📊</div>
+      <h3>Leaderboard</h3>
+      <p>Top players this week</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PLAY SCREEN ══════════════ -->
+<div class="screen" id="play-screen">
+  <button class="back-btn" onclick="showScreen('main-screen')">← Back</button>
+
+  <div class="section-card">
+    <div class="section-title">Select Category</div>
+    <div class="section-sub">Locked categories unlock forever for 50 coins.</div>
+    <div class="cat-grid" id="category-grid"></div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Difficulty</div>
+    <div class="section-sub">Choose how hard you want it.</div>
+    <div class="diff-grid">
+      <div class="diff-card" onclick="selectDiff('easy',this)">
+        <div class="diff-icon">🟢</div>
+        <div class="diff-name">Easy</div>
+        <div class="diff-info">10 questions</div>
+      </div>
+      <div class="diff-card" onclick="selectDiff('medium',this)">
+        <div class="diff-icon">🟡</div>
+        <div class="diff-name">Medium</div>
+        <div class="diff-info">15 questions</div>
+      </div>
+      <div class="diff-card" onclick="selectDiff('hard',this)">
+        <div class="diff-icon">🔴</div>
+        <div class="diff-name">Hard</div>
+        <div class="diff-info">20 questions</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn-primary" onclick="startQuiz()">🚀 Start Quiz</button>
+    <button class="btn-secondary" onclick="watchAd()">▶ Watch Ad (+20 coins)</button>
+  </div>
+</div>
+
+<!-- ══════════════ QUIZ SCREEN ══════════════ -->
+<div class="screen" id="quiz-screen">
+  <div id="ai-loading-area" class="ai-loading">
+    <div class="ai-spinner"></div>
+    <h3>AI is generating your questions</h3>
+    <p>Brand new questions, just for you <span class="ai-dots"><span>.</span><span>.</span><span>.</span></span></p>
+  </div>
+  <div id="quiz-area" style="display:none">
+    <div class="quiz-header">
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-label">
+          <span id="q-counter">Question 1 of 10</span>
+          <span id="q-score">Score: 0</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="q-progress" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="timer-wrap">
+        <div class="timer-circle" id="timer-circle"><span id="timer-val">15</span></div>
+      </div>
+    </div>
+    <div class="powerups-row">
+      <button class="powerup-btn" id="btn-hint" onclick="useHint()">💡 Hint <small>(5🪙)</small></button>
+      <button class="powerup-btn" id="btn-time" onclick="useExtraTime()">⏱️ +10s <small>(10🪙)</small></button>
+      <button class="powerup-btn" id="btn-skip" onclick="skipQuestion()">⏭️ Skip <small>(20🪙)</small></button>
+    </div>
+    <div class="question-card">
+      <div class="q-category" id="q-cat-label"></div>
+      <div class="q-text" id="q-text"></div>
+    </div>
+    <div class="options-grid" id="options-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════ RESULT SCREEN ══════════════ -->
+<div class="screen" id="result-screen">
+  <div class="result-hero">
+    <div class="result-grade" id="result-grade">A+</div>
+    <h2 id="result-title">Excellent!</h2>
+    <p id="result-msg" style="color:var(--text2);margin-top:8px;"></p>
+  </div>
+  <div class="result-stats">
+    <div class="stat-card"><div class="stat-val" id="res-correct">0</div><div class="stat-label">Correct</div></div>
+    <div class="stat-card"><div class="stat-val" id="res-coins">0</div><div class="stat-label">Coins Earned</div></div>
+    <div class="stat-card"><div class="stat-val" id="res-pct">0%</div><div class="stat-label">Accuracy</div></div>
+  </div>
+  <div class="action-row" style="justify-content:center">
+    <button class="btn-primary" onclick="startQuiz()">🔄 Play Again</button>
+    <button class="btn-share" onclick="shareScore()">📲 WhatsApp Share</button>
+    <button class="btn-secondary" onclick="watchAd()">📺 Watch Ad (+20🪙)</button>
+    <button class="btn-outline" onclick="showScreen('main-screen')">🏠 Menu</button>
+  </div>
+</div>
+
+<!-- ══════════════ LEADERBOARD ══════════════ -->
+<div class="screen" id="leaderboard-screen">
+  <button class="back-btn" onclick="showScreen('main-screen')">← Back</button>
+  <div class="section-card">
+    <div class="section-title">🏆 Leaderboard</div>
+    <div id="lb-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════ SETTINGS ══════════════ -->
+<div class="screen" id="settings-screen">
+  <button class="back-btn" onclick="showScreen('main-screen')">← Back</button>
+  <div class="section-card">
+    <div class="section-title">⚙️ Settings</div>
+
+    <div class="settings-row">
+      <div><div class="settings-label">🪙 Your Coins</div><div class="settings-desc">Current balance</div></div>
+      <div style="font-family:'Baloo 2',cursive;font-size:1.4rem;color:var(--gold)" id="settings-coins">0🪙</div>
+    </div>
+
+    <div class="settings-row">
+      <div><div class="settings-label">🚫 Remove Ads</div><div class="settings-desc">Never see ad prompts again</div></div>
+      <button class="btn-primary" onclick="removeAds()" id="remove-ads-btn" style="padding:8px 16px;font-size:0.85rem;">200🪙 Remove</button>
+    </div>
+
+    <!-- Questions Sources Info -->
+    <div style="background:linear-gradient(135deg,#0d2a10,#1a2a0d);border:1px solid var(--gold);border-radius:16px;padding:18px;margin:12px 0">
+      <div style="font-weight:800;color:var(--gold);margin-bottom:12px;font-size:1rem">🌐 Questions Sources — Sab Free!</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px;background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.2);border-radius:10px;padding:10px">
+          <span style="font-size:1.4rem">🌍</span>
+          <div>
+            <div style="font-weight:800;font-size:0.88rem">Open Trivia DB</div>
+            <div style="font-size:0.75rem;color:var(--text2)">4,000+ questions auto-load karein — koi account nahi, koi payment nahi!</div>
+          </div>
+          <span style="margin-left:auto;color:var(--green);font-weight:800;font-size:0.8rem">AUTO ✅</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;background:rgba(245,197,24,0.06);border:1px solid rgba(245,197,24,0.15);border-radius:10px;padding:10px">
+          <span style="font-size:1.4rem">📊</span>
+          <div>
+            <div style="font-weight:800;font-size:0.88rem">Google Sheets (Apni Questions)</div>
+            <div style="font-size:0.75rem;color:var(--text2)">Khud questions likho, Sheet se auto-load hongi</div>
+          </div>
+          <span style="margin-left:auto;color:var(--gold);font-weight:800;font-size:0.8rem">OPTIONAL</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:10px">
+          <span style="font-size:1.4rem">📦</span>
+          <div>
+            <div style="font-weight:800;font-size:0.88rem">Built-in Bank</div>
+            <div style="font-size:0.75rem;color:var(--text2)">80+ Desi questions — internet band ho tab bhi kaam karta hai</div>
+          </div>
+          <span style="margin-left:auto;color:var(--text2);font-weight:800;font-size:0.8rem">OFFLINE ✅</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Google Sheets Setup -->
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px">
+      <div style="font-weight:800;margin-bottom:6px">📊 Google Sheets Setup (Optional)</div>
+      <div style="font-size:0.78rem;color:var(--text2);margin-bottom:12px;line-height:1.6">
+        Apni custom questions add karni hain? Google Sheets banao aur CSV link paste karein.
+        <br><a href="#" onclick="showSheetsGuide()" style="color:var(--gold)">📖 How to setup? (click here)</a>
+      </div>
+      <input id="sheets-url-input" type="text" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv"
+        style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.78rem;width:100%;margin-bottom:10px">
+      <button class="btn-sm" onclick="saveSheetsUrl()">💾 Save Sheet URL</button>
+    </div>
+
+    <div class="settings-row">
+      <div><div class="settings-label">🔄 Reset Progress</div><div class="settings-desc">Clear all data and start fresh</div></div>
+      <button class="btn-outline" onclick="resetGame()" style="border-color:var(--red);color:var(--red);">Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- Name Entry Popup -->
+<div class="popup-overlay" id="name-popup">
+  <div class="popup">
+    <div style="font-size:2.5rem;margin-bottom:12px">🏆</div>
+    <h2>Apna Naam Likhein!</h2>
+    <p>Leaderboard par apna naam show hoga</p>
+    <input class="name-input-box" id="player-name-input" type="text" maxlength="20" placeholder="Aapka naam...">
+    <div class="popup-btns">
+      <button class="btn-primary" onclick="submitName()">Save Karein ✅</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sheets Guide Popup -->
+<div class="popup-overlay" id="sheets-guide-popup">
+  <div class="popup" style="max-width:480px;text-align:left">
+    <h2 style="margin-bottom:16px">📊 Google Sheets Setup</h2>
+    <div style="font-size:0.83rem;color:var(--text2);line-height:2">
+      <div style="color:var(--gold);font-weight:800;margin-bottom:8px">Step 1: New Google Sheet banao</div>
+      <div>sheets.google.com pe jaao → New Sheet banao</div>
+      <div style="color:var(--gold);font-weight:800;margin:12px 0 8px">Step 2: Yeh columns banao (Row 1 = Header):</div>
+      <div style="background:var(--card2);border-radius:8px;padding:10px;font-family:monospace;font-size:0.75rem;color:var(--green)">
+        question | option1 | option2 | option3 | option4 | correct_index
+      </div>
+      <div style="margin-top:8px;font-size:0.78rem">correct_index = 0,1,2 ya 3 (option ka number)</div>
+      <div style="color:var(--gold);font-weight:800;margin:12px 0 8px">Step 3: Publish karein:</div>
+      <div>File → Share → Publish to web → CSV → Copy link</div>
+      <div style="color:var(--gold);font-weight:800;margin:12px 0 8px">Step 4:</div>
+      <div>Woh link yahan settings mein paste karein → Save!</div>
+    </div>
+    <div style="margin-top:20px">
+      <button class="btn-primary" onclick="closePopup('sheets-guide-popup')">Got it! ✅</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ DAILY CHALLENGE ══════════════ -->
+<div class="screen" id="daily-screen">
+  <button class="back-btn" onclick="showScreen('main-screen')">← Back</button>
+  <div class="section-card" style="text-align:center">
+    <div style="font-size:3rem;margin-bottom:12px">🔥</div>
+    <div class="section-title">Daily Challenge</div>
+    <p style="color:var(--text2);margin-bottom:20px">10 special questions, same for everyone today. +50 bonus coins!</p>
+    <button class="btn-primary" onclick="startDaily()">Start Daily Challenge</button>
+  </div>
+</div>
+
+<!-- ══════════════ TOURNAMENT ══════════════ -->
+<div class="screen" id="tournament-screen">
+  <button class="back-btn" onclick="showScreen('main-screen')">← Back</button>
+  <div class="section-card" style="text-align:center">
+    <div style="font-size:3rem;margin-bottom:12px">🏆</div>
+    <div class="section-title">Tournament Mode</div>
+    <p style="color:var(--text2);margin-bottom:20px">20 mixed hard questions. Entry fee: 30 coins. Top scores get Hall of Fame!</p>
+    <button class="btn-primary" onclick="enterTournament()">Enter Tournament (30🪙)</button>
+  </div>
+</div>
+
+<!-- ══════════════ POPUPS ══════════════ -->
+<!-- Unlock Popup -->
+<div class="popup-overlay" id="unlock-popup">
+  <div class="popup">
+    <h2 id="unlock-title">🔓 Unlock Category</h2>
+    <p id="unlock-msg">Unlock this category for 50 coins?</p>
+    <div class="popup-btns">
+      <button class="btn-primary" onclick="confirmUnlock()">Unlock (50🪙)</button>
+      <button class="btn-outline" onclick="closePopup('unlock-popup')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Ad Popup -->
+<div class="popup-overlay" id="ad-popup">
+  <div class="popup">
+    <h2>📺 Watch Ad</h2>
+    <div class="ad-banner">ADVERTISEMENT<br><small style="font-size:0.7rem;letter-spacing:1px">Your Ad Could Be Here</small></div>
+    <div class="ad-timer-bar"><div class="ad-timer-fill" id="ad-fill" style="width:0%"></div></div>
+    <p id="ad-countdown" style="color:var(--gold);font-weight:800">Watching... 5s</p>
+    <div class="popup-btns">
+      <button class="btn-outline" id="ad-skip-btn" style="display:none" onclick="skipAd()">Skip (no coins)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Daily Bonus Popup -->
+<div class="popup-overlay" id="bonus-popup">
+  <div class="popup">
+    <div style="font-size:3rem;margin-bottom:12px">🎁</div>
+    <h2>Daily Bonus!</h2>
+    <p>You earned <strong style="color:var(--gold)">+15 coins</strong> for logging in today!</p>
+    <div class="popup-btns">
+      <button class="btn-primary" onclick="closePopup('bonus-popup')">Awesome! 🎉</button>
+    </div>
+  </div>
+</div>
+
+<!-- Low Coins Popup -->
+<div class="popup-overlay" id="lowcoins-popup">
+  <div class="popup">
+    <div style="font-size:2.5rem;margin-bottom:12px">💸</div>
+    <h2>Low on Coins!</h2>
+    <p>You need more coins. Watch an ad to earn <strong style="color:var(--gold)">+20 coins</strong>!</p>
+    <div class="popup-btns">
+      <button class="btn-primary" onclick="closePopup('lowcoins-popup');watchAd()">Watch Ad</button>
+      <button class="btn-outline" onclick="closePopup('lowcoins-popup')">Later</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════
+// DATA
+// ══════════════════════════════════
+const CATEGORIES = [
+  { id:'gk', name:'General Knowledge', icon:'🌍', desc:'Everyday facts, Urdu touch, maths, and world trivia.', locked:false },
+  { id:'science', name:'Science', icon:'🔬', desc:'Physics, biology, chemistry, and smart science basics.', locked:false },
+  { id:'pk', name:'Pakistan History', icon:'🇵🇰', desc:'Pakistan movement, leaders, landmarks, and heritage.', locked:false },
+  { id:'islamic', name:'Islamic Knowledge', icon:'🕌', desc:'Quran facts, Hadith, Prophets, pillars, months, masjids, companions.', locked:true },
+  { id:'cinema', name:'Pakistani Cinema & Music', icon:'🎬', desc:'Dramas, actors, singers, OSTs, Lollywood, and TV culture.', locked:true },
+  { id:'tech', name:'Tech & AI', icon:'💻', desc:'Internet, coding basics, AI concepts, smartphones, and tech brands.', locked:true },
+  { id:'math', name:'Math Challenges', icon:'🔢', desc:'Arithmetic, percentages, fractions, algebra, and word problems.', locked:true },
+  { id:'current', name:'Current Affairs', icon:'📰', desc:'Pakistan recent affairs, leaders, organizations, and world events.', locked:true }
+];
+
+const FALLBACK_QUESTIONS = {
+  gk: [
+    {q:"What is the capital of Pakistan?",opts:["Lahore","Islamabad","Karachi","Peshawar"],ans:1},
+    {q:"How many days are in a leap year?",opts:["364","365","366","367"],ans:2},
+    {q:"Which is the largest ocean?",opts:["Atlantic","Indian","Arctic","Pacific"],ans:3},
+    {q:"What is H2O?",opts:["Salt","Water","Sugar","Acid"],ans:1},
+    {q:"How many continents are there?",opts:["5","6","7","8"],ans:2},
+    {q:"Which planet is closest to the Sun?",opts:["Venus","Mars","Mercury","Earth"],ans:2},
+    {q:"What language is spoken most in Pakistan?",opts:["Punjabi","Urdu","Sindhi","Pashto"],ans:0},
+    {q:"How many sides does a hexagon have?",opts:["5","6","7","8"],ans:1},
+    {q:"What is the currency of Pakistan?",opts:["Rupee","Taka","Dirham","Riyal"],ans:0},
+    {q:"Which animal is called the Ship of the Desert?",opts:["Horse","Elephant","Camel","Donkey"],ans:2}
+  ],
+  science: [
+    {q:"What gas do plants absorb from the air?",opts:["Oxygen","Carbon Dioxide","Nitrogen","Hydrogen"],ans:1},
+    {q:"What is the chemical symbol for Gold?",opts:["Gd","Go","Au","Ag"],ans:2},
+    {q:"How many bones are in the adult human body?",opts:["186","196","206","216"],ans:2},
+    {q:"What planet is known as the Red Planet?",opts:["Venus","Mars","Jupiter","Saturn"],ans:1},
+    {q:"What is the speed of light approximately?",opts:["300,000 km/s","150,000 km/s","3,000 km/s","30,000 km/s"],ans:0},
+    {q:"What organ pumps blood through the body?",opts:["Brain","Kidney","Liver","Heart"],ans:3},
+    {q:"What is the powerhouse of the cell?",opts:["Nucleus","Ribosome","Mitochondria","Vacuole"],ans:2},
+    {q:"Which vitamin does sunlight provide?",opts:["Vitamin A","Vitamin B","Vitamin C","Vitamin D"],ans:3},
+    {q:"What is the boiling point of water in Celsius?",opts:["90","95","100","105"],ans:2},
+    {q:"DNA stands for?",opts:["Deoxyribonucleic Acid","Double Nucleic Acid","Deoxyribose Nucleic Acid","None"],ans:0}
+  ],
+  pk: [
+    {q:"When did Pakistan gain independence?",opts:["August 14, 1947","August 15, 1947","March 23, 1947","October 27, 1947"],ans:0},
+    {q:"Who was the founder of Pakistan?",opts:["Allama Iqbal","Liaquat Ali Khan","Quaid-e-Azam","Sir Syed Ahmad Khan"],ans:2},
+    {q:"What is the national language of Pakistan?",opts:["Punjabi","Pashto","Urdu","Sindhi"],ans:2},
+    {q:"Where is the Badshahi Mosque located?",opts:["Karachi","Lahore","Islamabad","Multan"],ans:1},
+    {q:"Which mountain is the highest in Pakistan?",opts:["Nanga Parbat","Broad Peak","K2","Gasherbrum"],ans:2},
+    {q:"What year was the Constitution of Pakistan adopted?",opts:["1956","1962","1973","1977"],ans:2},
+    {q:"Which river is the longest in Pakistan?",opts:["Chenab","Jhelum","Ravi","Indus"],ans:3},
+    {q:"Pakistan's national sport is?",opts:["Cricket","Football","Hockey","Kabaddi"],ans:2},
+    {q:"Who wrote the national anthem of Pakistan?",opts:["Faiz Ahmad Faiz","Hafeez Jalandhari","Allama Iqbal","Josh Malihabadi"],ans:1},
+    {q:"Lahore is the capital of which province?",opts:["Sindh","KPK","Punjab","Balochistan"],ans:2}
+  ],
+  islamic: [
+    {q:"How many Surahs are in the Holy Quran?",opts:["100","114","120","99"],ans:1},
+    {q:"What is the first pillar of Islam?",opts:["Salah","Zakat","Shahada","Sawm"],ans:2},
+    {q:"In which city was the Prophet Muhammad (PBUH) born?",opts:["Madinah","Mecca","Taif","Jerusalem"],ans:1},
+    {q:"How many times do Muslims pray daily?",opts:["3","4","5","6"],ans:2},
+    {q:"What is the holy month of fasting called?",opts:["Shawwal","Rajab","Ramadan","Muharram"],ans:2},
+    {q:"Which is the largest Surah in the Quran?",opts:["Al-Fatiha","Al-Baqarah","Al-Imran","Al-Nisa"],ans:1},
+    {q:"What does 'Islam' mean?",opts:["Peace","Submission","Faith","Mercy"],ans:1},
+    {q:"How many Prophets are mentioned in the Quran?",opts:["15","25","35","45"],ans:1},
+    {q:"What is the direction Muslims face when praying?",opts:["Jerusalem","Mecca (Qibla)","Madinah","Baghdad"],ans:1},
+    {q:"Which angel brought revelation to Prophet Muhammad (PBUH)?",opts:["Jibreel","Mikail","Israfil","Azrael"],ans:0}
+  ],
+  cinema: [
+    {q:"Which Pakistani drama was a huge hit featuring Fawad Khan?",opts:["Humsafar","Mann Mayal","Dillagi","Mere Qatil"],ans:0},
+    {q:"Who is known as the 'Queen of Pop' in Pakistan?",opts:["Hadiqa Kiani","Nazia Hassan","Riffat Ara","Mehdi Hassan"],ans:1},
+    {q:"Which TV channel is known for popular Pakistani dramas?",opts:["PTV","ARY Digital","HUM TV","Geo TV"],ans:2},
+    {q:"Mahira Khan is famous for which drama?",opts:["Humsafar","Mann Mayal","Dillagi","Zindagi Gulzar Hai"],ans:3},
+    {q:"Who sang 'Ko Ko Korina'?",opts:["Nazia Hassan","Ahmed Rushdi","Mehdi Hassan","Nusrat Fateh Ali Khan"],ans:1},
+    {q:"Which Pakistani film won international acclaim in 2015?",opts:["Waar","Ho Mann Jahaan","Moor","Bin Roye"],ans:2},
+    {q:"Atif Aslam's breakthrough song was?",opts:["Aadat","Woh Lamhe","Pehli Nazar","Doorie"],ans:0},
+    {q:"Which Pakistani drama had the song 'Dil Dil Pakistan'?",opts:["Ankahi","Alpha Bravo Charlie","Angan Terha","Fifty Fifty"],ans:1},
+    {q:"Fawad Khan appeared in which Bollywood film?",opts:["Bajrangi Bhaijaan","Kapoor & Sons","Ae Dil Hai Mushkil","Both B & C"],ans:3},
+    {q:"Which city is called the entertainment hub of Pakistan?",opts:["Islamabad","Lahore","Karachi","Peshawar"],ans:2}
+  ],
+  tech: [
+    {q:"What does AI stand for?",opts:["Automated Intelligence","Artificial Intelligence","Advanced Integration","Auto Interface"],ans:1},
+    {q:"Who founded Microsoft?",opts:["Steve Jobs","Mark Zuckerberg","Bill Gates","Elon Musk"],ans:2},
+    {q:"What does 'www' stand for?",opts:["World Wide Web","World Web Wide","Wide World Web","Web World Wide"],ans:0},
+    {q:"Which company made the iPhone?",opts:["Samsung","Google","Apple","Sony"],ans:2},
+    {q:"What is the most used programming language in 2024?",opts:["Java","C++","Python","JavaScript"],ans:3},
+    {q:"RAM stands for?",opts:["Random Access Memory","Read Access Memory","Random Allocated Memory","Read Allocated Memory"],ans:0},
+    {q:"What is ChatGPT made by?",opts:["Google","Anthropic","OpenAI","Meta"],ans:2},
+    {q:"Which company owns Instagram?",opts:["Twitter/X","Google","Apple","Meta"],ans:3},
+    {q:"What does CPU stand for?",opts:["Central Processing Unit","Core Power Unit","Central Power Unit","Core Processing Unit"],ans:0},
+    {q:"What is the most visited website in the world?",opts:["Facebook","YouTube","Google","Amazon"],ans:2}
+  ],
+  math: [
+    {q:"What is 15% of 200?",opts:["25","30","35","40"],ans:1},
+    {q:"What is the square root of 144?",opts:["10","11","12","13"],ans:2},
+    {q:"If a shirt costs Rs.800 and has 25% discount, final price?",opts:["Rs.550","Rs.600","Rs.625","Rs.650"],ans:1},
+    {q:"What is 2 to the power of 8?",opts:["128","256","512","64"],ans:1},
+    {q:"A train travels 120km in 2 hours. Speed is?",opts:["40 km/h","50 km/h","60 km/h","70 km/h"],ans:2},
+    {q:"What is the value of Pi (approximately)?",opts:["3.14","3.41","3.12","3.16"],ans:0},
+    {q:"What is 1/4 as a percentage?",opts:["20%","25%","30%","40%"],ans:1},
+    {q:"What is 7 × 8?",opts:["54","56","58","52"],ans:1},
+    {q:"If 3x = 21, what is x?",opts:["5","6","7","8"],ans:2},
+    {q:"What is the area of a square with side 9cm?",opts:["72cm²","81cm²","90cm²","63cm²"],ans:1}
+  ],
+  current: [
+    {q:"Who is the Secretary-General of the United Nations (2024)?",opts:["Ban Ki-moon","Kofi Annan","António Guterres","Tedros Adhanom"],ans:2},
+    {q:"Which country hosted the FIFA World Cup 2022?",opts:["Russia","Qatar","UAE","Saudi Arabia"],ans:1},
+    {q:"What is the currency of the European Union?",opts:["Pound","Dollar","Euro","Frank"],ans:2},
+    {q:"CPEC connects Pakistan with which country?",opts:["USA","India","China","Russia"],ans:2},
+    {q:"Which city is the headquarters of the United Nations?",opts:["Washington DC","London","Paris","New York"],ans:3},
+    {q:"Who invented the World Wide Web?",opts:["Bill Gates","Tim Berners-Lee","Vint Cerf","Steve Jobs"],ans:1},
+    {q:"In which year did COVID-19 pandemic begin globally?",opts:["2018","2019","2020","2021"],ans:2},
+    {q:"What is the capital of Saudi Arabia?",opts:["Dubai","Riyadh","Jeddah","Mecca"],ans:1},
+    {q:"Which organization deals with world trade rules?",opts:["IMF","World Bank","WTO","WHO"],ans:2},
+    {q:"Pakistan's largest city by population is?",opts:["Lahore","Islamabad","Faisalabad","Karachi"],ans:3}
+  ]
+};
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let state = {
+  coins: parseInt(localStorage.getItem('dqm_coins') || '100'),
+  unlocked: JSON.parse(localStorage.getItem('dqm_unlocked') || '[]'),
+  adFree: localStorage.getItem('dqm_adfree') === 'true',
+  lastLogin: localStorage.getItem('dqm_lastlogin') || '',
+  streak: JSON.parse(localStorage.getItem('dqm_streak') || '{"count":0,"last":""}'),
+  leaderboard: JSON.parse(localStorage.getItem('dqm_lb') || '[]'),
+  adsToday: JSON.parse(localStorage.getItem('dqm_ads') || '{"date":"","count":0}'),
+  sheetsUrl: localStorage.getItem('dqm_sheets') || '',
+  playerName: localStorage.getItem('dqm_name') || ''
+};
+
+let quiz = {
+  questions: [], current: 0, score: 0,
+  category: null, difficulty: 'medium',
+  timer: null, timeLeft: 15,
+  coinsEarned: 0, isDaily: false
+};
+let pendingUnlock = null;
+let adResolve = null;
+
+function save() {
+  localStorage.setItem('dqm_coins', state.coins);
+  localStorage.setItem('dqm_unlocked', JSON.stringify(state.unlocked));
+  localStorage.setItem('dqm_adfree', state.adFree);
+  localStorage.setItem('dqm_lastlogin', state.lastLogin);
+  localStorage.setItem('dqm_streak', JSON.stringify(state.streak));
+  localStorage.setItem('dqm_lb', JSON.stringify(state.leaderboard));
+  localStorage.setItem('dqm_ads', JSON.stringify(state.adsToday));
+  if(state.sheetsUrl) localStorage.setItem('dqm_sheets', state.sheetsUrl);
+  if(state.playerName) localStorage.setItem('dqm_name', state.playerName);
+}
+
+// ══════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id === 'leaderboard-screen') renderLeaderboard();
+  if(id === 'settings-screen') {
+    document.getElementById('settings-coins').textContent = state.coins + '🪙';
+    document.getElementById('sheets-url-input').value = state.sheetsUrl;
+    document.getElementById('remove-ads-btn').textContent = state.adFree ? '✅ Ad-Free!' : '200🪙 Remove';
+    document.getElementById('remove-ads-btn').disabled = state.adFree;
+  }
+  if(id === 'play-screen') renderCategories();
+  if(id === 'main-screen' || id === 'play-screen') { if(!bgMusicPlaying && soundEnabled) playMenuMusic(); }
+  if(id === 'result-screen') stopBgMusic();
+  playClickSound();
+}
+
+function updateCoins(delta, x, y) {
+  state.coins += delta;
+  if(state.coins < 0) state.coins = 0;
+  save();
+  document.getElementById('coin-count').textContent = state.coins;
+  const badge = document.getElementById('coin-display');
+  if(delta < 0) { badge.classList.add('shake'); setTimeout(()=>badge.classList.remove('shake'),400); }
+  // float text
+  if(delta !== 0) {
+    const el = document.createElement('div');
+    el.className = 'coin-float';
+    el.textContent = (delta > 0 ? '+' : '') + delta + '🪙';
+    el.style.cssText = `left:${x||window.innerWidth-80}px;top:${y||60}px;color:${delta>0?'var(--gold)':'var(--red)'}`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+  }
+  if(state.coins < 20 && !state.adFree) {
+    setTimeout(() => showPopup('lowcoins-popup'), 600);
+  }
+}
+
+function showToast(msg, color) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderColor = color || 'var(--border)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function showPopup(id) { document.getElementById(id).classList.add('show'); }
+function closePopup(id) { document.getElementById(id).classList.remove('show'); }
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  document.querySelector('.topbar .btn-sm').textContent = document.body.classList.contains('light') ? '🌙 Dark' : '☀️ Light';
+}
+
+function confetti() {
+  const colors = ['#f5c518','#2ecc71','#e74c3c','#3498db','#9b59b6'];
+  for(let i=0;i<60;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${Math.random()*100}vw;top:-20px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*2}s;width:${6+Math.random()*10}px;height:${6+Math.random()*10}px`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+function init() {
+  document.getElementById('coin-count').textContent = state.coins;
+  checkDailyBonus();
+  checkStreak();
+  renderCategories();
+}
+
+function checkDailyBonus() {
+  const today = new Date().toDateString();
+  if(state.lastLogin !== today) {
+    state.lastLogin = today;
+    updateCoins(15);
+    save();
+    setTimeout(() => showPopup('bonus-popup'), 800);
+  }
+}
+
+function checkStreak() {
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  if(state.streak.last === yesterday) {
+    state.streak.count++;
+  } else if(state.streak.last !== today) {
+    state.streak.count = 1;
+  }
+  state.streak.last = today;
+  save();
+
+  if(state.streak.count > 1) {
+    document.getElementById('streak-area').innerHTML = `
+      <div class="streak-banner">
+        <span style="font-size:2rem">🔥</span>
+        <div>
+          <div style="font-weight:800;font-size:1rem">${state.streak.count} Day Streak!</div>
+          <div style="font-size:0.78rem;color:var(--text2)">Keep it up for bonus coins!</div>
+        </div>
+      </div>`;
+  }
+}
+
+// ══════════════════════════════════
+// CATEGORIES
+// ══════════════════════════════════
+function renderCategories() {
+  const grid = document.getElementById('category-grid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const isUnlocked = !cat.locked || state.unlocked.includes(cat.id);
+    const div = document.createElement('div');
+    div.className = 'cat-card' + (cat.locked && !isUnlocked ? ' locked' : '') + (quiz.category === cat.id ? ' selected' : '');
+    div.onclick = () => selectCategory(cat.id, isUnlocked, cat);
+    div.innerHTML = `
+      <div class="cat-top">
+        <div class="cat-name">${cat.icon} ${cat.name}</div>
+        ${isUnlocked
+          ? `<span class="badge-ready">READY</span>`
+          : `<span class="badge-locked">🔒 50🪙</span>`}
+      </div>
+      <div class="cat-desc">${cat.desc}</div>`;
+    grid.appendChild(div);
+  });
+}
+
+function selectCategory(id, isUnlocked, cat) {
+  if(!isUnlocked) {
+    pendingUnlock = cat;
+    document.getElementById('unlock-title').textContent = `🔓 Unlock ${cat.icon} ${cat.name}`;
+    document.getElementById('unlock-msg').textContent = `This will cost 50 coins. You have ${state.coins} coins.`;
+    showPopup('unlock-popup');
+    return;
+  }
+  quiz.category = id;
+  renderCategories();
+}
+
+function confirmUnlock() {
+  if(!pendingUnlock) return;
+  if(state.coins < 50) { showToast('❌ Not enough coins!', 'var(--red)'); closePopup('unlock-popup'); return; }
+  updateCoins(-50);
+  state.unlocked.push(pendingUnlock.id);
+  save();
+  closePopup('unlock-popup');
+  showToast(`✅ ${pendingUnlock.name} unlocked!`, 'var(--green)');
+  quiz.category = pendingUnlock.id;
+  pendingUnlock = null;
+  renderCategories();
+}
+
+function selectDiff(d, el) {
+  document.querySelectorAll('.diff-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  quiz.difficulty = d;
+}
+
+// ══════════════════════════════════
+// FREE QUESTIONS SYSTEM
+// ══════════════════════════════════
+
+// Open Trivia DB category mapping (100% FREE, no key needed)
+const OTDB_CATS = {
+  gk:      9,   // General Knowledge
+  science: 17,  // Science & Nature
+  pk:      23,  // History
+  math:    19,  // Mathematics
+  tech:    18,  // Computers
+  current: 24,  // Politics
+  islamic: 20,  // Mythology (closest free category, we supplement with fallback)
+  cinema:  11   // Film
+};
+
+async function fetchFreeQuestions(category, difficulty, count) {
+  const catId = OTDB_CATS[category] || 9;
+  const diff = difficulty === 'easy' ? 'easy' : difficulty === 'hard' ? 'hard' : 'medium';
+  const url = `https://opentdb.com/api.php?amount=${count}&category=${catId}&difficulty=${diff}&type=multiple`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.response_code === 0 && data.results?.length > 0) {
+      return data.results.map(r => {
+        // Decode HTML entities
+        const decode = s => { const t=document.createElement('textarea'); t.innerHTML=s; return t.value; };
+        const correct = decode(r.correct_answer);
+        const wrongs = r.incorrect_answers.map(decode);
+        const opts = [...wrongs, correct];
+        // Shuffle options
+        for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+        return { q: decode(r.question), opts, ans: opts.indexOf(correct) };
+      });
+    }
+  } catch(e) { console.warn('Open Trivia DB failed:', e); }
+  return null;
+}
+
+// Google Sheets CSV (if user sets their own sheet)
+async function fetchGoogleSheets(sheetUrl, count) {
+  if(!sheetUrl) return null;
+  try {
+    const res = await fetch(sheetUrl);
+    const text = await res.text();
+    const rows = text.trim().split('\n').slice(1); // skip header
+    const questions = rows.map(row => {
+      const cols = row.split(',');
+      if(cols.length < 6) return null;
+      return {
+        q: cols[0]?.trim(),
+        opts: [cols[1]?.trim(), cols[2]?.trim(), cols[3]?.trim(), cols[4]?.trim()],
+        ans: parseInt(cols[5]?.trim()) || 0
+      };
+    }).filter(Boolean);
+    if(questions.length > 0) {
+      for(let i=questions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[questions[i],questions[j]]=[questions[j],questions[i]];}
+      return questions.slice(0, count);
+    }
+  } catch(e) { console.warn('Google Sheets failed:', e); }
+  return null;
+}
+
+async function fetchAIQuestions(category, difficulty, count) {
+  // 1. Try Google Sheets first (if user configured)
+  if(state.sheetsUrl) {
+    const q = await fetchGoogleSheets(state.sheetsUrl, count);
+    if(q) { showToast('📊 Questions from your Sheet!', 'var(--green)'); return q; }
+  }
+  // 2. Try Open Trivia DB (FREE)
+  const q = await fetchFreeQuestions(category, difficulty, count);
+  if(q) { showToast('🌐 Fresh questions loaded!', 'var(--green)'); return q; }
+  // 3. Fallback to built-in
+  return null;
+}
+
+// ══════════════════════════════════
+// QUIZ FLOW
+// ══════════════════════════════════
+async function startQuiz(isDaily=false, isTournament=false) {
+  if(!quiz.category && !isDaily && !isTournament) { showToast('⚠️ Please select a category!','var(--gold)'); return; }
+  if(isTournament) {
+    if(state.coins < 30) { showToast('❌ Need 30 coins for tournament!','var(--red)'); return; }
+    updateCoins(-30);
+    quiz.category = 'gk'; // mixed in tournament
+  }
+  quiz.isDaily = isDaily;
+  quiz.score = 0; quiz.current = 0; quiz.coinsEarned = 0;
+  const diff = quiz.difficulty || 'medium';
+  const count = isTournament ? 20 : (diff==='easy'?10:diff==='medium'?15:20);
+
+  showScreen('quiz-screen');
+  stopBgMusic();
+  document.getElementById('ai-loading-area').style.display = 'block';
+  document.getElementById('quiz-area').style.display = 'none';
+
+  // Try free sources first, then fallback to built-in
+  let questions = await fetchAIQuestions(quiz.category, diff, count);
+  if(!questions) {
+    // Use fallback questions
+    const pool = [...(FALLBACK_QUESTIONS[quiz.category] || FALLBACK_QUESTIONS.gk)];
+    // Shuffle
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+    questions = pool.slice(0, count);
+  }
+
+  quiz.questions = questions;
+  document.getElementById('ai-loading-area').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  renderQuestion();
+}
+
+function startDaily() { quiz.category='pk'; quiz.difficulty='medium'; startQuiz(true); }
+function enterTournament() { startQuiz(false, true); }
+
+function renderQuestion() {
+  const q = quiz.questions[quiz.current];
+  if(!q) { endQuiz(); return; }
+  const total = quiz.questions.length;
+  document.getElementById('q-counter').textContent = `Question ${quiz.current+1} of ${total}`;
+  document.getElementById('q-score').textContent = `Score: ${quiz.score}`;
+  document.getElementById('q-progress').style.width = `${(quiz.current/total)*100}%`;
+  const cat = CATEGORIES.find(c=>c.id===quiz.category);
+  document.getElementById('q-cat-label').textContent = (cat ? cat.icon+' '+cat.name : '');
+  document.getElementById('q-text').textContent = q.q;
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  q.opts.forEach((opt,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.onclick = () => selectAnswer(i, q.ans);
+    grid.appendChild(btn);
+  });
+  // Update powerups
+  document.getElementById('btn-hint').disabled = state.coins < 5;
+  document.getElementById('btn-time').disabled = state.coins < 10;
+  document.getElementById('btn-skip').disabled = state.coins < 20;
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(quiz.timer);
+  stopTickTock();
+  quiz.timeLeft = 10;
+  const circle = document.getElementById('timer-circle');
+  const val = document.getElementById('timer-val');
+  circle.classList.remove('danger');
+  quiz.timer = setInterval(() => {
+    quiz.timeLeft--;
+    val.textContent = quiz.timeLeft;
+    if(quiz.timeLeft <= 3) {
+      circle.classList.add('danger');
+      startTickTock(quiz.timeLeft);
+    }
+    if(quiz.timeLeft <= 0) { clearInterval(quiz.timer); stopTickTock(); timeUp(); }
+  }, 1000);
+}
+
+function timeUp() {
+  const q = quiz.questions[quiz.current];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((b,i) => { b.disabled=true; if(i===q.ans) b.classList.add('correct'); });
+  playTimeUpSound();
+  updateCoins(-2);
+  quiz.coinsEarned = Math.max(0, quiz.coinsEarned - 2);
+  showToast('⏱️ Time up! -2🪙', 'var(--red)');
+  setTimeout(() => nextQuestion(), 1200);
+}
+
+function selectAnswer(chosen, correct) {
+  clearInterval(quiz.timer);
+  stopTickTock();
+  playClickSound();
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+  if(chosen === correct) {
+    btns[chosen].classList.add('correct');
+    playCorrectSound();
+    quiz.score++;
+    const earned = 5;
+    updateCoins(earned, window.innerWidth - 80, 60);
+    quiz.coinsEarned += earned;
+    showToast(`✅ Correct! +${earned}🪙`, 'var(--green)');
+  } else {
+    btns[chosen].classList.add('wrong');
+    btns[correct].classList.add('correct');
+    playWrongSound();
+    updateCoins(-2);
+    quiz.coinsEarned = Math.max(0, quiz.coinsEarned - 2);
+    showToast('❌ Wrong! -2🪙', 'var(--red)');
+  }
+  setTimeout(() => nextQuestion(), 1400);
+}
+
+function nextQuestion() {
+  quiz.current++;
+  if(quiz.current >= quiz.questions.length) { endQuiz(); return; }
+  renderQuestion();
+}
+
+// ══════════════════════════════════
+// POWERUPS
+// ══════════════════════════════════
+function useHint() {
+  if(state.coins < 5) return;
+  updateCoins(-5);
+  const q = quiz.questions[quiz.current];
+  const btns = document.querySelectorAll('.option-btn');
+  let eliminated = 0;
+  for(let i=0;i<btns.length;i++){
+    if(i !== q.ans && !btns[i].classList.contains('eliminated') && eliminated < 1){
+      btns[i].classList.add('eliminated');
+      eliminated++;
+    }
+  }
+  document.getElementById('btn-hint').disabled = true;
+  showToast('💡 One wrong answer removed!', 'var(--gold)');
+}
+
+function useExtraTime() {
+  if(state.coins < 10) return;
+  updateCoins(-10);
+  quiz.timeLeft += 10;
+  document.getElementById('timer-val').textContent = quiz.timeLeft;
+  document.getElementById('timer-circle').classList.remove('danger');
+  document.getElementById('btn-time').disabled = true;
+  showToast('⏱️ +10 seconds added!', 'var(--gold)');
+}
+
+function skipQuestion() {
+  if(state.coins < 20) return;
+  updateCoins(-20);
+  clearInterval(quiz.timer);
+  nextQuestion();
+}
+
+// ══════════════════════════════════
+// END QUIZ
+// ══════════════════════════════════
+function endQuiz() {
+  clearInterval(quiz.timer);
+  const total = quiz.questions.length;
+  const pct = Math.round((quiz.score/total)*100);
+  const grade = pct>=90?'A+':pct>=80?'A':pct>=70?'B':pct>=60?'C':'D';
+  const titles = {'A+':'Outstanding! 🌟','A':'Excellent! 🎉','B':'Good Job! 👍','C':'Keep Practicing! 💪','D':'Try Again! 🔄'};
+
+  document.getElementById('result-grade').textContent = grade;
+  document.getElementById('result-title').textContent = titles[grade];
+  document.getElementById('result-msg').textContent = `${quiz.score} out of ${total} correct`;
+  document.getElementById('res-correct').textContent = quiz.score;
+  document.getElementById('res-coins').textContent = '+' + quiz.coinsEarned;
+  document.getElementById('res-pct').textContent = pct + '%';
+
+  if(quiz.isDaily) { updateCoins(50); showToast('🎁 Daily Challenge bonus +50🪙!', 'var(--gold)'); }
+  if(pct >= 80) confetti();
+
+  // Save to leaderboard
+  askPlayerName(name => {
+    state.leaderboard.push({ name, score: quiz.score, pct, date: new Date().toLocaleDateString() });
+    state.leaderboard.sort((a,b)=>b.score-a.score);
+    state.leaderboard = state.leaderboard.slice(0, 10);
+    save();
+  });
+
+  showScreen('result-screen');
+}
+
+// ══════════════════════════════════
+// LEADERBOARD
+// ══════════════════════════════════
+function renderLeaderboard() {
+  const list = document.getElementById('lb-list');
+  if(state.leaderboard.length === 0) {
+    list.innerHTML = '<p style="color:var(--text2);text-align:center;padding:24px">No scores yet. Play to get on the board!</p>';
+    return;
+  }
+  const medals = ['🥇','🥈','🥉'];
+  list.innerHTML = state.leaderboard.map((e,i) => `
+    <div class="lb-row">
+      <div class="lb-rank">${medals[i] || (i+1)}</div>
+      <div class="lb-info">
+        <div class="lb-name">${e.name}</div>
+        <div class="lb-score">${e.pct}% accuracy • ${e.date}</div>
+      </div>
+      <div class="lb-pts">${e.score}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════
+// ADS
+// ══════════════════════════════════
+function watchAd() {
+  if(state.adFree) { showToast('✅ You have Ad-Free mode!', 'var(--green)'); return; }
+  const today = new Date().toDateString();
+  if(state.adsToday.date !== today) state.adsToday = {date:today, count:0};
+  if(state.adsToday.count >= 10) { showToast('📺 Max 10 ads per day reached!', 'var(--gold)'); return; }
+
+  showPopup('ad-popup');
+  let secs = 5; let skippable = false;
+  const fill = document.getElementById('ad-fill');
+  const countdown = document.getElementById('ad-countdown');
+  const skipBtn = document.getElementById('ad-skip-btn');
+  skipBtn.style.display = 'none';
+  fill.style.width = '0%';
+
+  const interval = setInterval(() => {
+    secs--;
+    fill.style.width = `${((5-secs)/5)*100}%`;
+    countdown.textContent = `Watching... ${secs}s`;
+    if(secs <= 3 && !skippable) { skippable=true; skipBtn.style.display='inline-flex'; }
+    if(secs <= 0) {
+      clearInterval(interval);
+      closePopup('ad-popup');
+      state.adsToday.count++;
+      save();
+      updateCoins(20, window.innerWidth-80, 60);
+      showToast('🎉 +20 coins earned!', 'var(--gold)');
+    }
+  }, 1000);
+  window._adInterval = interval;
+}
+
+function skipAd() {
+  clearInterval(window._adInterval);
+  closePopup('ad-popup');
+  showToast('Ad skipped. No coins earned.', 'var(--text2)');
+}
+
+// ══════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════
+function removeAds() {
+  if(state.adFree) return;
+  if(state.coins < 200) { showToast('❌ Need 200 coins!', 'var(--red)'); return; }
+  updateCoins(-200);
+  state.adFree = true; save();
+  document.getElementById('remove-ads-btn').textContent = '✅ Ad-Free!';
+  document.getElementById('remove-ads-btn').disabled = true;
+  showToast('🎉 Ads removed forever!', 'var(--green)');
+}
+
+function saveSheetsUrl() {
+  state.sheetsUrl = document.getElementById('sheets-url-input').value.trim();
+  save();
+  showToast('✅ Google Sheets URL saved!', 'var(--green)');
+}
+
+function showSheetsGuide() {
+  showPopup('sheets-guide-popup');
+}
+
+function resetGame() {
+  if(!confirm('Reset all data? This cannot be undone.')) return;
+  localStorage.clear();
+  location.reload();
+}
+
+// ══════════════════════════════════
+// SOUND ENGINE (Web Audio API)
+// ══════════════════════════════════
+let audioCtx = null;
+let soundEnabled = true;
+let bgMusicNodes = [];
+let bgMusicPlaying = false;
+
+function getAudioCtx() {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  document.getElementById('sound-btn').textContent = soundEnabled ? '🔊' : '🔇';
+  if(!soundEnabled) { stopBgMusic(); }
+  else { playMenuMusic(); }
+}
+
+function playTone(freq, type, duration, vol=0.3, delay=0) {
+  if(!soundEnabled) return;
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, ctx.currentTime + delay);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + duration);
+  } catch(e){}
+}
+
+function playCorrectSound() {
+  if(!soundEnabled) return;
+  // Happy ascending chime
+  playTone(523, 'sine', 0.15, 0.35, 0);
+  playTone(659, 'sine', 0.15, 0.35, 0.1);
+  playTone(784, 'sine', 0.2, 0.4, 0.2);
+  playTone(1047,'sine', 0.25, 0.45, 0.3);
+}
+
+function playWrongSound() {
+  if(!soundEnabled) return;
+  // Buzzer descending
+  playTone(300, 'sawtooth', 0.12, 0.3, 0);
+  playTone(220, 'sawtooth', 0.12, 0.3, 0.12);
+  playTone(160, 'sawtooth', 0.2, 0.3, 0.24);
+}
+
+function playClickSound() {
+  if(!soundEnabled) return;
+  playTone(800, 'sine', 0.08, 0.15);
+}
+
+function playTickSound() {
+  if(!soundEnabled) return;
+  try {
+    const ctx = getAudioCtx();
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for(let i=0; i<data.length; i++) data[i] = (Math.random()*2-1) * (1 - i/data.length);
+    const src = ctx.createBufferSource();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass'; filter.frequency.value = 1200; filter.Q.value = 2;
+    src.buffer = buf;
+    src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    src.start();
+  } catch(e){}
+}
+
+function playTimeUpSound() {
+  if(!soundEnabled) return;
+  playTone(440,'square',0.1,0.4,0);
+  playTone(415,'square',0.1,0.4,0.1);
+  playTone(392,'square',0.15,0.4,0.2);
+  playTone(370,'square',0.2,0.4,0.35);
+}
+
+function playCoinSound() {
+  if(!soundEnabled) return;
+  playTone(880,'sine',0.08,0.2,0);
+  playTone(1100,'sine',0.08,0.2,0.06);
+}
+
+function playMenuMusic() {
+  if(!soundEnabled || bgMusicPlaying) return;
+  bgMusicPlaying = true;
+  const notes = [523,587,659,698,784,880,987,1047];
+  let i = 0;
+  function playNext() {
+    if(!bgMusicPlaying || !soundEnabled) return;
+    playTone(notes[i % notes.length], 'sine', 0.4, 0.06);
+    i++;
+    const timeout = setTimeout(playNext, 450);
+    bgMusicNodes.push(timeout);
+  }
+  playNext();
+}
+
+function stopBgMusic() {
+  bgMusicPlaying = false;
+  bgMusicNodes.forEach(t => clearTimeout(t));
+  bgMusicNodes = [];
+}
+
+// Tick-tock for last 3 seconds
+let tickInterval = null;
+function startTickTock(seconds) {
+  clearInterval(tickInterval);
+  if(seconds <= 3 && seconds > 0) {
+    tickInterval = setInterval(() => playTickSound(), 500);
+  }
+}
+function stopTickTock() { clearInterval(tickInterval); }
+
+// ══════════════════════════════════
+// SCORE SHARING
+// ══════════════════════════════════
+function shareScore() {
+  const grade = document.getElementById('result-grade').textContent;
+  const pct = document.getElementById('res-pct').textContent;
+  const correct = document.getElementById('res-correct').textContent;
+  const cat = CATEGORIES.find(c=>c.id===quiz.category);
+  const catName = cat ? cat.name : 'Quiz';
+  const playerName = state.playerName || 'Player';
+
+  const text = `🎯 *Desi Quiz Master*\n\n` +
+    `👤 ${playerName} ne ${catName} mein khelaa!\n` +
+    `🏆 Grade: *${grade}*\n` +
+    `✅ Correct: *${correct}* questions\n` +
+    `📊 Accuracy: *${pct}*\n\n` +
+    `Kya tum beat kar sakte ho? 👇\n` +
+    `🔗 https://anam10945.github.io/desi-quiz-master/`;
+
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+}
+
+// ══════════════════════════════════
+// NAME ENTRY
+// ══════════════════════════════════
+function askPlayerName(callback) {
+  if(state.playerName) { callback(state.playerName); return; }
+  showPopup('name-popup');
+  window._nameCallback = callback;
+}
+
+function submitName() {
+  const name = document.getElementById('player-name-input').value.trim() || 'Player';
+  state.playerName = name;
+  save();
+  closePopup('name-popup');
+  if(window._nameCallback) { window._nameCallback(name); window._nameCallback = null; }
+}
+
+// ══════════════════════════════════
+// START
+// ══════════════════════════════════
+init();
+document.addEventListener('click', () => {
+  // Start menu music on first user interaction
+  if(!bgMusicPlaying && soundEnabled) playMenuMusic();
+}, { once: true });
+</script>
+</body>
+</html>
